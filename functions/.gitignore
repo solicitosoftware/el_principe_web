@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+/.firebase
+
+# production
+/build
+
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+serviceAccountKey.json
+serviceAccountKeyQA.json
+
+firebase-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock*
+package-lock.json*
