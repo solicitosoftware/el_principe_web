@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   initialClientes,
   estadoProceso as estadoProcesoClientes,
-  obtenerClienteAsync,
+  obtenerClientesAsync,
 } from "../../../redux/reducers/clientesReducer";
 import CajaBase from "../../dashboard/cajaBase";
 import Buscador from "./buscador";
@@ -26,7 +26,7 @@ function Domicilio() {
 
   const cargarClientes = useCallback(() => {
     if (clientes.length === 0) {
-      dispatch(obtenerClienteAsync());
+      dispatch(obtenerClientesAsync());
     } else {
       const newData = clientes.map((item) => ({ ...item }));
       setData(newData);
@@ -108,7 +108,7 @@ function Domicilio() {
         abrir={busqueda}
         clientes={data}
         cargando={estadoClientes.isLoading}
-        obtener={() => dispatch(obtenerClienteAsync())}
+        obtener={() => dispatch(obtenerClientesAsync())}
         crear={handleCrear}
         actualizar={handleActualizar}
         seleccionar={handleSeleccionar}

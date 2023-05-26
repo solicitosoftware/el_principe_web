@@ -57,6 +57,7 @@ function HistorialPV() {
   const componentPrint = useRef();
 
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,
@@ -143,9 +144,9 @@ function HistorialPV() {
 
   const obtenerUsuario = useCallback(() => {
     if (Object.values(usuario).length === 0) {
-      dispatch(obtenerUsuarioAsync(login.token));
+      dispatch(obtenerUsuarioAsync(login.id));
     }
-  }, [dispatch, usuario, login.token]);
+  }, [dispatch, usuario, login.id]);
 
   useEffect(() => {
     obtenerUsuario();

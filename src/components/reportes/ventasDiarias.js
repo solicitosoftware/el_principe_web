@@ -56,19 +56,53 @@ export class ComponentToPrint extends React.PureComponent {
       0
     );
 
-    const totalEfectivo = this.props.ventas.reduce(
-      (sum, value) =>
-        value.estado !== "Cancelado"
-          ? value?.cliente?.barrio?.valor
-            ? value?.domiciliario?.rol !== 5
-              ? sum + (value.detallePago?.efectivo || value.total)
-              : sum +
-                (value.detallePago?.efectivo || value.total) -
-                value.cliente.barrio.valor
-            : sum + value.detallePago.efectivo
-          : sum,
-      0
-    );
+    let totalEfectivo = 0;
+    let totalTransferencia = 0;
+
+    this.props.ventas
+      .filter((x) => x.estado != "Cancelado")
+      .map((value) => {
+        switch (value.medioPago) {
+          case "efectivo":
+            if (value?.cliente?.barrio?.valor) {
+              if (value?.domiciliario?.rol !== 5) {
+                totalEfectivo += value.total;
+              } else {
+                totalEfectivo += value.total - value?.cliente?.barrio?.valor;
+              }
+            } else {
+              totalEfectivo += value.total;
+            }
+            break;
+          case "transferencia":
+            if (value?.cliente?.barrio?.valor) {
+              if (value?.domiciliario?.rol !== 5) {
+                totalTransferencia += value.total;
+              } else {
+                totalTransferencia +=
+                  value.total - value?.cliente?.barrio?.valor;
+              }
+            } else {
+              totalTransferencia += value.total;
+            }
+            break;
+          default:
+            if (value?.cliente?.barrio?.valor) {
+              if (value?.domiciliario?.rol !== 5) {
+                totalEfectivo += value.detallePago.efectivo;
+                totalTransferencia += value.detallePago.transferencia;
+              } else {
+                totalEfectivo +=
+                  value.detallePago.efectivo - value?.cliente?.barrio?.valor;
+                totalTransferencia += value.detallePago.transferencia;
+              }
+            } else {
+              totalEfectivo += value.detallePago.efectivo;
+              totalTransferencia += value.detallePago.transferencia;
+            }
+            break;
+        }
+      });
 
     return (
       <div className="flex flex-col text-center w-1/2">
@@ -124,7 +158,7 @@ export class ComponentToPrint extends React.PureComponent {
           </div>
           <div className="flex flex-row justify-between">
             <text>Total Transferencia.</text>
-            <text>{formatoPrecio(totalVd - totalEfectivo)}</text>
+            <text>{formatoPrecio(totalTransferencia)}</text>
           </div>
           <br />
           <div className="flex flex-row justify-between">

@@ -74,6 +74,7 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
   const utils = useSelector(initialUtils);
 
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,
@@ -125,9 +126,9 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
 
   const obtenerUsuario = useCallback(() => {
     if (Object.values(usuario).length === 0) {
-      dispatch(obtenerUsuarioAsync(login.token));
+      dispatch(obtenerUsuarioAsync(login.id));
     }
-  }, [dispatch, usuario, login.token]);
+  }, [dispatch, usuario, login.id]);
 
   const cargarProductos = useCallback(() => {
     if (productos.length === 0) {

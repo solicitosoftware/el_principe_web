@@ -1,5 +1,4 @@
-import React, { useContext, useEffect } from "react";
-import { FirebaseContext } from "../../firebase";
+import React, { useEffect } from "react";
 import "../../css/general.css";
 import { FormGroup, Input, Button } from "reactstrap";
 import { useFormik } from "formik";
@@ -9,13 +8,26 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useSessionStorage from "../utils/useSessionStorage";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loginUsuarioAsync,
+  estadoProceso,
+  logout,
+  obtenerUsuarioAsync,
+} from "../../redux/reducers/usuariosReducer";
+import { disenoToast } from "../dashboard/disenoToastBase";
+import ReactLoading from "react-loading";
+import colors from "../utils/colors";
 
 function Login() {
-  const { firebase } = useContext(FirebaseContext);
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
+  const estado = useSelector(estadoProceso);
+
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,
@@ -23,24 +35,13 @@ function Login() {
 
   const [login, setLogin] = useSessionStorage("login", initialLogin);
 
-  //componente para mostrar mensajes
-  const disenoToast = {
-    position: "top-center",
-    autoClose: 1800,
-    hideProgressBar: true,
-    closeOnClick: false,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  };
-
   //metodo para calcular pagina de inicio a mostrar
   useEffect(() => {
     const pathname = window.location.pathname;
     if (login.token) {
       navigate("/inicio");
     } else {
+      dispatch(logout());
       if (pathname !== "/") {
         navigate("/");
       }
@@ -61,68 +62,35 @@ function Login() {
   });
 
   const permiso = (data) => {
-    if (data.exists) {
-      const { estado, rol } = data.data();
-      if (estado) {
-        if (rol !== 2 && rol !== 5) return true;
-      }
-    }
+    const { estado, rol } = data;
+    if (estado && rol !== 2 && rol !== 5) return true;
     return false;
   };
 
   //Metodo submit para el formulario del formik
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
-      firebase.auth
-        .signInWithEmailAndPassword(
-          formik.values.correo,
-          formik.values.password
-        )
-        .then((result) => {
-          let docRef = firebase.db.collection("empleados").doc(result.user.uid);
-          docRef
-            .get()
-            .then((doc) => {
-              if (permiso(doc)) {
-                setLogin({
-                  token: doc.id,
-                  rol: doc.data().rol,
-                  sede: doc.data().sede,
-                });
-              } else {
-                toast.error(
-                  "El usuario no tiene permisos para esta opción",
-                  disenoToast
-                );
-              }
-            })
-            .catch((error) => {
-              firebase.db.collection("logs").add({
-                accion: "Login",
-                fecha: firebase.time,
-                error: error.message,
-                datos: { docRef },
-              });
-              toast.error(
-                "No fue posible obtener los datos del usuario",
-                disenoToast
-              );
-            });
-        })
-        .catch((err) => {
-          toast.error("Usuario y/o contraseña invalidos", disenoToast);
-        });
+      const result = await dispatch(loginUsuarioAsync(formik.values)).unwrap();
+      if (result) {
+        const empleado = await dispatch(
+          obtenerUsuarioAsync(result.localId)
+        ).unwrap();
+        if (permiso(empleado)) {
+          setLogin({
+            id: result.localId,
+            token: result.idToken,
+            rol: empleado.rol,
+            sede: empleado.sede,
+          });
+        } else {
+          toast.error(
+            "El usuario no tiene permisos para esta opción",
+            disenoToast
+          );
+        }
+      }
     } catch (error) {
-      firebase.db.collection("logs").add({
-        accion: "Login",
-        fecha: firebase.time,
-        error: error.message,
-        datos: { ...formik.values },
-      });
-      toast.error(
-        "Ha ocurrido un error al tratar de autenticarse!!",
-        disenoToast
-      );
+      toast.error("Usuario y/o contraseña incorrectos", disenoToast);
     }
     limpiarDatos();
   };
@@ -173,7 +141,15 @@ function Login() {
           </div>
         ) : null}
         <div className="modal-boton self-center mt-4">
-          <Button onClick={handleSubmit}>Ingresar</Button>
+          {!estado.isLoading ? (
+            <Button onClick={handleSubmit}>Ingresar</Button>
+          ) : (
+            <ReactLoading
+              type="spinningBubbles"
+              width={50}
+              color={colors.secundario}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -2,35 +2,6 @@ const { Router } = require("express");
 const router = Router();
 const { firebase } = require("../firebase/firebase");
 
-router.post("/api/getClientes", async (request, response) => {
-  try {
-    let values = null;
-    if (request.body.lastDoc !== null) {
-      values = await firebase
-        .collection("clientes")
-        .orderBy("nombre", "asc")
-        .startAfter(request.body.lastDoc)
-        .limit(10000)
-        .get();
-    } else {
-      values = await firebase
-        .collection("clientes")
-        .orderBy("nombre", "asc")
-        .limit(10000)
-        .get();
-    }
-    const clientes = values.docs.map((doc) => {
-      return {
-        id: doc.id,
-        ...doc.data(),
-      };
-    });
-    return response.status(200).json(clientes);
-  } catch (error) {
-    return response.status(500).json(error);
-  }
-});
-
 router.post("/api/createCliente/:cliente_id", async (request, response) => {
   try {
     const result = await firebase
@@ -38,6 +9,22 @@ router.post("/api/createCliente/:cliente_id", async (request, response) => {
       .doc(request.params.cliente_id)
       .set(request.body.data);
     return response.status(200).json(result);
+  } catch (error) {
+    return response.status(500).json(error);
+  }
+});
+
+router.put("/api/getCliente/:cliente_id", async (request, response) => {
+  try {
+    const document = await firebase
+      .collection("clientes")
+      .doc(request.params.cliente_id)
+      .get();
+    const cliente = {
+      id: document.id,
+      data: { ...document.data() },
+    };
+    return response.status(200).json(cliente);
   } catch (error) {
     return response.status(500).json(error);
   }

@@ -36,6 +36,7 @@ function Empleado() {
   const dispatch = useDispatch();
 
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,

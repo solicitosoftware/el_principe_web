@@ -88,6 +88,18 @@ router.put(
   }
 );
 
+router.put("/api/getPedidoDomicilio/:pedido_id", async (request, response) => {
+  try {
+    const pedido = await firebase
+      .collection("pedidos")
+      .doc(request.params.pedido_id)
+      .get();
+    return response.status(200).json(pedido.data());
+  } catch (error) {
+    return response.status(500).json(error);
+  }
+});
+
 router.put(
   "/api/updatePedidoDomicilio/:pedido_id",
   async (request, response) => {

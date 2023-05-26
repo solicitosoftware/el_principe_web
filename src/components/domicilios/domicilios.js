@@ -52,6 +52,7 @@ import {
   estadoProceso,
   reiniciarEstados,
   cancelarPedidoApp,
+  obtenerPedidoIdAsync,
 } from "../../redux/reducers/pedidosReducer";
 import { disenoToast } from "../dashboard/disenoToastBase";
 import Messages from "../utils/message";
@@ -124,6 +125,7 @@ function Domicilios() {
   const moment = require("moment");
 
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,
@@ -437,9 +439,9 @@ function Domicilios() {
 
   const obtenerUsuario = useCallback(() => {
     if (Object.values(usuario).length === 0) {
-      dispatch(obtenerUsuarioAsync(login.token));
+      dispatch(obtenerUsuarioAsync(login.id));
     }
-  }, [dispatch, usuario, login.token]);
+  }, [dispatch, usuario, login.id]);
 
   useEffect(() => {
     obtenerUsuario();
@@ -465,6 +467,20 @@ function Domicilios() {
     setPedidosApp(pedidosApp);
   };
 
+  const validarPedidoApp = async (values, datos) => {
+    const result = await dispatch(obtenerPedidoIdAsync(values.id)).unwrap();
+    if (result.estado !== "Pendiente aprobar") {
+      return false;
+    }
+    dispatch(
+      cancelarPedidoApp({
+        ...values,
+        ...datos,
+        comentario: "El restaurante no recibió su pedido",
+      })
+    );
+  };
+
   useEffect(() => {
     const datos = {
       estado: "Cancelado",
@@ -476,25 +492,21 @@ function Domicilios() {
     pedidosApp.map((item) => {
       const barrioSelect = barrios.find((x) => x.id === item.cliente.barrio.id);
       if (barrioSelect && barrioSelect.valor !== item.cliente.barrio.valor) {
-        return dispatch(
+        dispatch(
           cancelarPedidoApp({
             ...item,
             ...datos,
             comentario: `Es necesario actualizar la aplicación en su última versión ${utils.parametros[0]?.appClientes.android}. Y recuerda realizar nuevamente tu pedido`,
           })
         );
-      }
-      const diferencia =
-        (new Date().getTime() - item.fecha.toDate().getTime()) / 1000 / 60;
-      const minutos = Math.round(diferencia);
-      if (minutos >= 15) {
-        return dispatch(
-          cancelarPedidoApp({
-            ...item,
-            ...datos,
-            comentario: "El restaurante no recibió su pedido",
-          })
-        );
+      } else {
+        const timer = setTimeout(async () => {
+          validarPedidoApp(item, datos);
+        }, 15 * 60 * 1000);
+
+        return () => {
+          clearTimeout(timer);
+        };
       }
     });
   }, [pedidosApp]);

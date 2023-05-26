@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 function useUsuarioPermisos() {
   const [permiso, setPermiso] = useState({});
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,

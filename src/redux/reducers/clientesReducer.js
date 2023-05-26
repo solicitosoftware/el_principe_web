@@ -5,7 +5,7 @@ import { RUTA_FUNCTIONS } from "../config";
 import { CodeError } from "../errors";
 
 const endpoints = {
-  obtener: "api/getClientes",
+  obtener: "api/getCliente",
   crear: "api/createCliente",
   actualizar: "api/updateCliente",
   eliminar: "api/deleteCliente",
@@ -24,7 +24,7 @@ const api = axios.create({
   baseURL: RUTA_FUNCTIONS,
 });
 
-export const obtenerClienteAsync = createAsyncThunk(
+export const obtenerClientesAsync = createAsyncThunk(
   "clientes/obtener",
   async () => {
     const values = await firebase.db
@@ -38,6 +38,14 @@ export const obtenerClienteAsync = createAsyncThunk(
       };
     });
     return clientes;
+  }
+);
+
+export const obtenerClienteAsync = createAsyncThunk(
+  "clientes/obtenerId",
+  async (data) => {
+    const response = await api.put(`clientes/${endpoints.obtener}/${data}`);
+    return response.data;
   }
 );
 
@@ -76,6 +84,29 @@ export const clientesReducer = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(obtenerClientesAsync.pending, (state) => {
+        state.estado = {
+          isLoading: true,
+          success: false,
+          error: false,
+        };
+      })
+      .addCase(obtenerClientesAsync.fulfilled, (state, action) => {
+        state.estado = {
+          isLoading: false,
+          success: false,
+          error: false,
+        };
+        state.value = action.payload;
+      })
+      .addCase(obtenerClientesAsync.rejected, (state, action) => {
+        state.estado = {
+          isLoading: false,
+          success: false,
+          error: CodeError(action.error.code),
+        };
+      })
+
       .addCase(obtenerClienteAsync.pending, (state) => {
         state.estado = {
           isLoading: true,
@@ -89,7 +120,20 @@ export const clientesReducer = createSlice({
           success: false,
           error: false,
         };
-        state.value = action.payload;
+        if (Object.values(action.payload.data).length > 0) {
+          const index = state.value.findIndex(
+            (item) => item.id === action.payload.id
+          );
+          index !== -1
+            ? (state.value[index] = {
+                id: action.payload.id,
+                ...action.payload.data,
+              })
+            : state.value.push({
+                id: action.payload.id,
+                ...action.payload.data,
+              });
+        }
       })
       .addCase(obtenerClienteAsync.rejected, (state, action) => {
         state.estado = {

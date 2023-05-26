@@ -5,6 +5,7 @@ import useSessionStorage from "../utils/useSessionStorage";
 //componente para proteger las rutas por permisos
 const ProtectedRoute = () => {
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,

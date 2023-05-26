@@ -32,6 +32,7 @@ function Home() {
   const navigate = useNavigate();
 
   const initialLogin = {
+    id: null,
     token: false,
     rol: 1,
     sede: null,
@@ -89,7 +90,7 @@ function Home() {
       Object.values(usuarios.value).length === 0 &&
       usuarios.estado.isLoading === false
     ) {
-      dispatch(obtenerUsuarioAsync(login.token));
+      dispatch(obtenerUsuarioAsync(login.id));
     }
   }, [generalState, dispatch]);
 

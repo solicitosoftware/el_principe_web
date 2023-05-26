@@ -7,6 +7,7 @@ const endpoints = {
   obtener: "api/getPedidos",
   crear: "api/createPedido",
   actualizar: "api/updatePedido",
+  obtenerPedido: "api/getPedidoDomicilio",
   actualizarDomicilio: "api/updatePedidoDomicilio",
   actualizarEstado: "api/updateEstadoPedido",
   actualizarDomiciliario: "api/updateDomiciliario",
@@ -33,6 +34,16 @@ export const obtenerPedidoAsync = createAsyncThunk(
     const response = await api.post(`pedidos/${endpoints.obtener}`, {
       ...data,
     });
+    return response.data;
+  }
+);
+
+export const obtenerPedidoIdAsync = createAsyncThunk(
+  "pedidos/obtenerPedido",
+  async (data) => {
+    const response = await api.put(
+      `pedidos/${endpoints.obtenerPedido}/${data}`
+    );
     return response.data;
   }
 );

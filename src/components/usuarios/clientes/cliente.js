@@ -4,10 +4,11 @@ import {
   initialClientes,
   estadoProceso,
   reiniciarEstados,
-  obtenerClienteAsync,
+  obtenerClientesAsync,
   crearClienteAsync,
   actualizarClienteAsync,
   eliminarClienteAsync,
+  obtenerClienteAsync,
 } from "../../../redux/reducers/clientesReducer";
 import {
   initialMunicipios,
@@ -146,9 +147,9 @@ function Cliente() {
       ),
       puntoRef4: Yup.string(),
     }),
-    onSubmit: () => {
+    onSubmit: async () => {
       const data = formatearDatos();
-      if (validarCliente(data)) {
+      if (await validarCliente(data)) {
         return dispatch(crearClienteAsync(data));
       } else {
         toast.error(
@@ -173,7 +174,7 @@ function Cliente() {
 
   const cargarClientes = useCallback(() => {
     if (clientes.length === 0) {
-      dispatch(obtenerClienteAsync());
+      dispatch(obtenerClientesAsync());
     } else {
       const newData = clientes.map((item) => ({ ...item }));
       setData(newData);
@@ -255,9 +256,9 @@ function Cliente() {
   }, [state]);
 
   //metodo para actualizar
-  const actualizarCliente = () => {
+  const actualizarCliente = async () => {
     const data = formatearDatos();
-    if (validarCliente(data)) {
+    if (await validarCliente(data)) {
       return dispatch(
         actualizarClienteAsync({
           id: idCliente,
@@ -296,10 +297,11 @@ function Cliente() {
     };
   };
 
-  const validarCliente = (values) => {
-    if (data.some((x) => x.telefono === values.telefono && x.id != idCliente)) {
-      return false;
-    }
+  const validarCliente = async (values) => {
+    const result = await dispatch(
+      obtenerClienteAsync(values.id || values.telefono)
+    ).unwrap();
+    if (Object.values(result.data).length > 0 && !idCliente) return false;
     return true;
   };
 
@@ -937,7 +939,7 @@ function Cliente() {
           componente="Clientes"
           datos={data}
           columnas={colunm}
-          obtener={() => dispatch(obtenerClienteAsync())}
+          obtener={() => dispatch(obtenerClientesAsync())}
           eliminar={(oldData) => dispatch(eliminarClienteAsync(oldData.id))}
           editar={cargarDatos}
         />
