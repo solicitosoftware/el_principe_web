@@ -70,24 +70,6 @@ router.put("/api/updateDomiciliario/:pedido_id", async (request, response) => {
   }
 });
 
-router.put(
-  "/api/updatePedidoDomiciliario/:pedido_id",
-  async (request, response) => {
-    try {
-      const result = await firebase
-        .collection("pedidos")
-        .doc(request.params.pedido_id)
-        .update({
-          estado: request.body.estado,
-          entrega: time,
-        });
-      return response.status(200).json(result);
-    } catch (error) {
-      return response.status(500).json(error);
-    }
-  }
-);
-
 router.put("/api/getPedidoDomicilio/:pedido_id", async (request, response) => {
   try {
     const pedido = await firebase
