@@ -2,7 +2,7 @@ import app from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
 import "firebase/auth";
-import FirebaseConfig from "./serviceAccountKey";
+import FirebaseConfig from "./serviceAccountKeyQA";
 
 //Importación de elementros de firebase
 class Firebase {

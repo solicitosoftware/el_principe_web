@@ -55,6 +55,7 @@ router.put("/api/updateCliente/:cliente_id", async (request, response) => {
       direccion2: request.body.direccion2,
       direccion3: request.body.direccion3,
       direccion4: request.body.direccion4,
+      url: request.body.url,
     });
     return response.status(200).json();
   } catch (error) {
