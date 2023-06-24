@@ -2,172 +2,125 @@ import React from "react";
 import PropTypes from "prop-types";
 import MaterialTable from "@material-table/core";
 import "../../css/general.css";
-import useUsuarioPermisos from "../utils/usuarioPermisos";
 
 function TableBase({
   componente,
   columnas,
   datos,
   obtener,
-  actualizar,
-  eliminar,
-  editar,
-  entregar,
-  imprimir,
-  detailPanel,
+  detalle,
   loading,
+  exportModal,
+  exportPdf,
+  exportCsv,
 }) {
-  const permisosRol = useUsuarioPermisos();
-
-  const validarPermiso = (accion) => {
-    const myComponent = !componente.includes("Punto Venta")
-      ? `${componente.replace(" ", "").toLowerCase()}`
-      : `${componente.replace(" ", "").replace(" ", "").toLowerCase()}`;
-    const value =
-      Object.values(permisosRol).length > 0 &&
-      permisosRol[myComponent]?.[accion];
-    return value;
-  };
-
   return (
-    Object.values(permisosRol).length > 0 && (
-      <MaterialTable
-        isLoading={loading}
-        responsive={true}
-        columns={columnas}
-        data={datos}
-        title={componente.toUpperCase()}
-        detailPanel={[
-          {
-            disabled: !detailPanel,
-            render: ({ rowData }) => detailPanel(rowData),
+    <MaterialTable
+      isLoading={loading}
+      responsive={true}
+      columns={columnas}
+      data={datos}
+      title={componente.toUpperCase()}
+      parentChildData={(row, rows) => rows.find((a) => a.id === row.parentId)}
+      actions={[
+        {
+          icon: "refresh",
+          tooltip: `Cargar ${componente}`,
+          isFreeAction: true,
+          onClick: () => obtener(),
+        },
+        {
+          icon: "download Reporte",
+          tooltip: "Descargar",
+          isFreeAction: true,
+          onClick: () => exportModal("Descarga"),
+        },
+        {
+          icon: "print",
+          tooltip: "Boleta",
+          isFreeAction: true,
+          onClick: () => exportModal("Boleta"),
+        },
+        (rowData) =>
+          rowData.productos && {
+            icon: "visibility",
+            tooltip: "Ver Detalle",
+            onClick: () => detalle(rowData),
           },
-        ]}
-        actions={[
-          {
-            icon: "refresh",
-            tooltip: `Cargar ${componente}`,
-            isFreeAction: true,
-            hidden: !validarPermiso("cargar"),
-            onClick: () => obtener(),
+        (rowData) =>
+          !rowData.productos && {
+            icon: "picture_as_pdf",
+            tooltip: "PDF",
+            onClick: () =>
+              exportPdf(
+                rowData.id === "Domicilios"
+                  ? datos.filter((x) => x.cliente)
+                  : datos.filter((x) => !x.cliente && x.productos)
+              ),
           },
-          {
-            icon: "print",
-            tooltip: "Imprimir",
-            hidden: !validarPermiso("imprimir"),
-            onClick: async (event, rowData) => imprimir(rowData),
+        (rowData) =>
+          !rowData.productos && {
+            icon: "difference",
+            tooltip: "Excel",
+            onClick: () =>
+              exportCsv(
+                rowData.id === "Domicilios"
+                  ? datos.filter((x) => x.cliente)
+                  : datos.filter((x) => !x.cliente && x.productos)
+              ),
           },
-          (rowData) => ({
-            icon: "app_registration_icon",
-            tooltip: "Modificar Pedido",
-            hidden: !validarPermiso("modificar"),
-            disabled:
-              rowData.estado === "Cancelado" || rowData.estado === "Entregado",
-            onClick: (event, rowData) =>
-              rowData.estado !== "Cancelado" && editar(rowData),
-          }),
-          (rowData) => ({
-            icon: "notifications",
-            tooltip: "Pedido Entregado",
-            hidden: !validarPermiso("entregar"),
-            disabled: rowData.estado !== "Despachado",
-            onClick: (event, rowData) =>
-              rowData.estado !== "Cancelado" && entregar(rowData),
-          }),
-          (rowData) => ({
-            icon: "edit",
-            tooltip: "Editar",
-            hidden: !validarPermiso("editarModal"),
-            disabled:
-              rowData.estado === "Cancelado" || rowData.estado === "Entregado",
-            onClick: (event, rowData) =>
-              rowData.estado !== "Cancelado" && editar(rowData),
-          }),
-        ]}
-        editable={{
-          isDeletable: (rowData) => {
-            if (permisosRol?.domicilios || permisosRol?.historial) {
-              return (
-                rowData.estado !== "Cancelado" && rowData.estado !== "Entregado"
-              );
-            }
-            return true;
+      ]}
+      options={{
+        sorting: true,
+        maxColumnSort: 2,
+        pageSizeOptions: [5, 10, 20, 50],
+        actionsColumnIndex: -1,
+        minBodyHeight: 260,
+        headerStyle: {
+          backgroundColor: "#FFF1E0",
+          color: "#ff9100",
+          fontSize: 16,
+        },
+      }}
+      localization={{
+        header: {
+          actions: "Acciones",
+        },
+        toolbar: {
+          searchPlaceholder: "Buscar",
+          searchTooltip: "Buscar",
+        },
+        pagination: {
+          labelDisplayedRows: "{from}-{to} de {count}",
+          labelRowsSelect: "Registros",
+          firstTooltip: "Ir al inicio",
+          lastTooltip: "Ir al final",
+          nextTooltip: "Página siguiente",
+          previousTooltip: "Página anterior",
+        },
+        body: {
+          editRow: {
+            saveTooltip: "Guardar",
+            cancelTooltip: "Cancelar",
+            deleteText: "¿Desea eliminar el registro?",
           },
-          isEditable: (rowData) => {
-            if (permisosRol?.domicilios || permisosRol?.historial) {
-              return (
-                rowData.estado !== "Cancelado" && rowData.estado !== "Entregado"
-              );
-            }
-            return true;
-          },
-          isEditHidden: () => !validarPermiso("editar"),
-          isDeleteHidden: () => !validarPermiso("eliminar"),
-          onRowUpdate: (newData) =>
-            new Promise((resolve) => {
-              actualizar(newData);
-              resolve();
-            }),
-          onRowDelete: (oldData) =>
-            new Promise((resolve) => {
-              eliminar(oldData);
-              resolve();
-            }),
-        }}
-        options={{
-          sorting: true,
-          maxColumnSort: 2,
-          pageSizeOptions: [5, 10, 20, 50],
-          actionsColumnIndex: -1,
-          minBodyHeight: 360,
-          headerStyle: {
-            backgroundColor: "#FFF1E0",
-            color: "#ff9100",
-            fontSize: 16,
-          },
-        }}
-        localization={{
-          header: {
-            actions: "Acciones",
-          },
-          toolbar: {
-            searchPlaceholder: "Buscar",
-            searchTooltip: "Buscar",
-          },
-          pagination: {
-            labelDisplayedRows: "{from}-{to} de {count}",
-            labelRowsSelect: "Registros",
-            firstTooltip: "Ir al inicio",
-            lastTooltip: "Ir al final",
-            nextTooltip: "Página siguiente",
-            previousTooltip: "Página anterior",
-          },
-          body: {
-            editRow: {
-              saveTooltip: "Guardar",
-              cancelTooltip: "Cancelar",
-              deleteText: "¿Desea eliminar el registro?",
-            },
-            emptyDataSourceMessage: "No hay datos para mostrar",
-            deleteTooltip: "Eliminar",
-            editTooltip: "Editar",
-          },
-        }}
-      />
-    )
+          emptyDataSourceMessage: "No hay datos para mostrar",
+          deleteTooltip: "Eliminar",
+          editTooltip: "Editar",
+        },
+      }}
+    />
   );
 }
 
 TableBase.propTypes = {
   componente: PropTypes.string.isRequired,
   columnas: PropTypes.array.isRequired,
-  detailPanel: PropTypes.bool.isRequired,
   datos: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 
 TableBase.defaultProps = {
-  detailPanel: false,
   datos: [],
   loading: false,
 };

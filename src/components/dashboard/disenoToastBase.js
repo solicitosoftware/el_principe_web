@@ -8,3 +8,13 @@ export const disenoToast = {
   progress: undefined,
   theme: "colored",
 };
+
+export const disenoToastConfirm = {
+  position: "top-center",
+  autoClose: false,
+  closeOnClick: true,
+  closeButton: true,
+  draggable: false,
+  theme: "light",
+  toastId: "deleteConfirmation",
+};

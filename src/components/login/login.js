@@ -6,91 +6,65 @@ import * as Yup from "yup";
 import { FaUserCircle } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useSessionStorage from "../utils/useSessionStorage";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  loginUsuarioAsync,
-  estadoProceso,
-  logout,
-  obtenerUsuarioAsync,
-} from "../../redux/reducers/usuariosReducer";
 import { disenoToast } from "../dashboard/disenoToastBase";
 import ReactLoading from "react-loading";
 import colors from "../utils/colors";
+import {
+  estadoProceso,
+  enviarEmailAsync,
+  loginUsuarioAsync,
+  initialLogin,
+} from "../../redux/reducers/loginReducer";
 
 function Login() {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
+  const login = useSelector(initialLogin);
+
   const estado = useSelector(estadoProceso);
 
-  const initialLogin = {
-    id: null,
-    token: false,
-    rol: 1,
-    sede: null,
-  };
-
-  const [login, setLogin] = useSessionStorage("login", initialLogin);
-
-  //metodo para calcular pagina de inicio a mostrar
   useEffect(() => {
-    const pathname = window.location.pathname;
-    if (login.token) {
-      navigate("/inicio");
-    } else {
-      dispatch(logout());
-      if (pathname !== "/") {
-        navigate("/");
+    if (!estado.isLoading) {
+      if (estado.success) {
+        toast.success(estado.success, disenoToast);
+      } else if (estado.error) {
+        toast.error(estado.error, disenoToast);
       }
+      limpiarDatos();
     }
-  }, [login, navigate]);
+  }, [dispatch, estado]);
+
+  useEffect(() => {
+    if (login) {
+      navigate("/Reportes");
+    }
+  }, [login]);
+
+  useEffect(() => {
+    dispatch(loginUsuarioAsync(window.location.href));
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       correo: "",
-      password: "",
     },
     validationSchema: Yup.object({
       correo: Yup.string()
         .required("El correo electrónico es obligatorio")
         .email("La direccion de correo es invalida"),
-      password: Yup.string().required("La contraseña es obligatoria"),
     }),
   });
 
-  const permiso = (data) => {
-    const { estado, rol } = data;
-    if (estado && rol !== 2 && rol !== 5) return true;
-    return false;
-  };
-
   //Metodo submit para el formulario del formik
   const handleSubmit = async () => {
-    try {
-      const result = await dispatch(loginUsuarioAsync(formik.values)).unwrap();
-      if (result) {
-        const empleado = await dispatch(
-          obtenerUsuarioAsync(result.localId)
-        ).unwrap();
-        if (permiso(empleado)) {
-          setLogin({
-            id: result.localId,
-            token: result.idToken,
-            rol: empleado.rol,
-            sede: empleado.sede,
-          });
-        } else {
-          toast.error(
-            "El usuario no tiene permisos para esta opción",
-            disenoToast
-          );
-        }
-      }
-    } catch (error) {
-      toast.error("Usuario y/o contraseña incorrectos", disenoToast);
+    if (formik.values.correo === process.env.REACT_APP_USER) {
+      dispatch(enviarEmailAsync(formik.values.correo));
+    } else {
+      toast.error("Error, usuario invalido", disenoToast);
     }
     limpiarDatos();
   };
@@ -123,21 +97,6 @@ function Login() {
         {formik.touched.correo && formik.errors.correo ? (
           <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-2">
             <p className="mb-0">{formik.errors.correo}</p>
-          </div>
-        ) : null}
-        <FormGroup className="mt-3">
-          <Input
-            type="password"
-            placeholder="Ingresa la contraseña"
-            id="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-        </FormGroup>
-        {formik.touched.password && formik.errors.password ? (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-2">
-            <p className="mb-0">{formik.errors.password}</p>
           </div>
         ) : null}
         <div className="modal-boton self-center mt-4">

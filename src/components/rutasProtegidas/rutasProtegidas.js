@@ -1,20 +1,16 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import useSessionStorage from "../utils/useSessionStorage";
+import { useSelector } from "react-redux";
+import { initialLogin } from "../../redux/reducers/loginReducer";
 
 //componente para proteger las rutas por permisos
 const ProtectedRoute = () => {
-  const initialLogin = {
-    id: null,
-    token: false,
-    rol: 1,
-    sede: null,
-  };
-
-  const [login] = useSessionStorage("login", initialLogin);
+  const login = useSelector(initialLogin);
 
   const blockPermiso = () => {
-    if (login.rol === 2 || login.rol === 5 || login.token === false) {
+    if (!login) {
+      return <Outlet />;
+
       return <Navigate to={"/"} replace />;
     }
     return <Outlet />;

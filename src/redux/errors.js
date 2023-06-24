@@ -6,6 +6,8 @@ export function CodeError(code) {
       return "Error, no fue posible conectar con el servidor";
     case "ERR_BAD_RESPONSE":
       return "Error, valida los datos ingresados";
+    case "auth/invalid-action-code":
+      return "Error, el código expiró intetelo nuevamente";
     default:
       return "Error, intetelo nuevamente";
   }

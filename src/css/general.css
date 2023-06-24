@@ -27,12 +27,6 @@
   flex-direction: column;
 }
 
-.home {
-  background: url("../images/fondo-home.jpg");
-  align-items: center;
-  justify-content: flex-end;
-}
-
 /* GENEREAL */
 
 .contain {
@@ -108,9 +102,15 @@
   cursor: pointer;
 }
 
+.modal-boton {
+  display: flex;
+  justify-content: space-around;
+  margin: 5px;
+}
+
 .modal-boton button {
   background-color: #dc291a;
-  margin-left: 5px;
+  margin-left: 10px;
   border-width: 0px;
 }
 
@@ -259,14 +259,6 @@
 }
 
 /* HOME */
-
-.logo {
-  background: url("../images/logo.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  min-height: 90vh;
-  width: 57%;
-}
 
 .div-block {
   flex-direction: column;
