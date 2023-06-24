@@ -142,6 +142,20 @@ router.put("/api/updateEntregaPedido/:pedido_id", async (request, response) => {
   }
 });
 
+router.post("/api/deletePedidos", async (request, response) => {
+  try {
+    const batch = firebase.batch();
+    request.body.data.map((docId) => {
+      const documentRef = firebase.collection("pedidos").doc(docId);
+      batch.delete(documentRef);
+    });
+    const result = await batch.commit();
+    return response.status(200).json(result);
+  } catch (error) {
+    return response.status(500).json(error);
+  }
+});
+
 router.put("/api/cancelPedido/:pedido_id", async (request, response) => {
   try {
     const result = await firebase
