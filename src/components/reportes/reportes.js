@@ -116,7 +116,7 @@ function Reportes() {
   }, [cargarPedidos]);
 
   const cargarConsecutivo = useCallback(() => {
-    if (utils.consecutivo === 0) {
+    if (utils === 0) {
       dispatch(obtenerConsecutivoAsync());
     }
   }, [dispatch, utils]);
@@ -481,7 +481,7 @@ function Reportes() {
           data={vendidos}
           ventas={pedidos}
           fecha={date}
-          consecutivo={utils.tirilla.consecutivo || utils.consecutivo}
+          consecutivo={utils}
         />
       </div>
       <TableBase

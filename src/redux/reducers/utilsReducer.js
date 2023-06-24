@@ -8,9 +8,7 @@ const endpoints = {
 };
 
 const initialState = {
-  value: {
-    consecutivo: 0,
-  },
+  value: 0,
   estado: {
     isLoading: false,
     success: false,
@@ -49,10 +47,7 @@ export const utilsReducer = createSlice({
           success: false,
           error: false,
         };
-        state.value = {
-          ...state.value,
-          consecutivo: action.payload,
-        };
+        state.value = action.payload + 1;
       })
       .addCase(obtenerConsecutivoAsync.rejected, (state, action) => {
         state.estado = {
