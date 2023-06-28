@@ -53,6 +53,13 @@ function TableBase({
           },
           {
             icon: "print",
+            tooltip: `Imprimir ${componente}`,
+            isFreeAction: true,
+            hidden: !validarPermiso("boleta"),
+            onClick: () => imprimir(),
+          },
+          {
+            icon: "print",
             tooltip: "Imprimir",
             hidden: !validarPermiso("imprimir"),
             onClick: async (event, rowData) => imprimir(rowData),

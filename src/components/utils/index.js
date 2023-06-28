@@ -12,11 +12,11 @@ export function formatearPrecio(val) {
 }
 
 //Agrega simbolo de peso y decimales
-export function formatoPrecio(val) {
+export function formatoPrecio(val, signo = ",") {
   try {
     if (val > 0) {
-      let value = "$" + parseFloat(val).toFixed(0);
-      value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      const valueStr = "$" + parseFloat(val).toFixed(0);
+      const value = valueStr.replace(/\B(?=(\d{3})+(?!\d))/g, signo);
       return value;
     } else if (val === 0) {
       return "$" + val;
@@ -56,4 +56,19 @@ export const diffMinutos = (despacho, entrega) => {
       ? `${horas} h ${minutosRound} min`
       : `${horas} h`
     : `${minutosRound} min`;
+};
+
+export const capitalize = (val) => {
+  if (val) {
+    let palabra = val
+      .toLowerCase()
+      .split(" ")
+      .map((frase) => {
+        if (frase != "") {
+          return frase[0].trim().toUpperCase() + frase.slice(1);
+        }
+      });
+    return palabra.join(" ");
+  }
+  return val;
 };

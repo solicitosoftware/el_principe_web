@@ -62,7 +62,7 @@ export const roles = [
         modificar: true,
         eliminar: true,
         imprimir: true,
-        fecha: true,
+        fecha: false,
       },
       historialdomicilios: {
         cargar: true,
@@ -80,7 +80,11 @@ export const roles = [
         eliminar: true,
         precio: true,
       },
-      reportes: {},
+      reportes: {
+        cargar: true,
+        fecha: true,
+        boleta: true,
+      },
       clientes: {
         cargar: true,
         crear: true,
@@ -152,7 +156,7 @@ export const roles = [
         modificar: true,
         eliminar: true,
         imprimir: true,
-        fecha: true,
+        fecha: false,
       },
       historialdomicilios: {
         cargar: true,

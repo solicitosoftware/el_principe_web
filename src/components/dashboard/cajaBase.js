@@ -203,7 +203,7 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
 
   //Metodo para guardar un pedido
   const guardarPedido = (observaciones) => {
-    const startOfToday = moment(new Date()).startOf("day");
+    const endOfToday = moment(new Date()).endOf("day");
     let values = {
       ipoconsumo,
       medioPago,
@@ -216,7 +216,7 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
       estado: imprimir ? "Impreso" : "Pendiente",
     };
     if (Object.values(domicilio).length > 0) {
-      dispatch(obtenerTurnoDomicilioAsync(startOfToday));
+      dispatch(obtenerTurnoDomicilioAsync(endOfToday));
       const { id, nombre, direccion, barrio, puntoRef, telefono, telefono2 } =
         domicilio;
       values.cliente = {
@@ -238,7 +238,7 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
           })
         );
       } else {
-        dispatch(obtenerTurnoCajaAsync(startOfToday));
+        dispatch(obtenerTurnoCajaAsync(endOfToday));
       }
     }
     setVenta({ ...values, recibido: recibido ? parseInt(recibido) : null });

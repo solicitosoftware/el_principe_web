@@ -6,8 +6,9 @@ import { CodeError } from "../errors";
 const endpoints = {
   turnoDomicilio: "api/getTurnoDomicilio",
   turnoCaja: "api/getTurnoCaja",
-  tirilla: "api/getTirilla",
-  consecutivo: "api/getConsecutivo",
+  crearTirilla: "api/createTirilla",
+  obtenerTirilla: "api/getTirilla",
+  ActualizarTirilla: "api/updateTirilla",
   parametros: "api/getParametros",
 };
 
@@ -16,7 +17,6 @@ const initialState = {
     turnoDomicilio: "",
     turno: "",
     tirilla: {},
-    consecutivo: 0,
     parametros: {},
   },
   estado: {
@@ -46,19 +46,29 @@ export const obtenerTurnoCajaAsync = createAsyncThunk(
   }
 );
 
-export const obtenerConsecutivoAsync = createAsyncThunk(
-  "consecutivo/obtener",
-  async () => {
-    const response = await api.get(`utils/${endpoints.consecutivo}`);
-    return response.data;
+export const crearTirillaAsync = createAsyncThunk(
+  "tirilla/crear",
+  async (data) => {
+    await api.post(`utils/${endpoints.crearTirilla}`, {
+      data,
+    });
   }
 );
 
 export const obtenerTirillaAsync = createAsyncThunk(
-  "tirillaFecha/obtener",
+  "tirilla/obtener",
   async (data) => {
-    const response = await api.put(`utils/${endpoints.tirilla}/${data}`);
-    return response.data.length > 0 && response.data[0];
+    const response = await api.put(`utils/${endpoints.obtenerTirilla}/${data}`);
+    return response.data;
+  }
+);
+
+export const actualizarTirillaAsync = createAsyncThunk(
+  "tirilla/actualizar",
+  async (data) => {
+    await api.put(`utils/${endpoints.ActualizarTirilla}/${data.id}`, {
+      ...data,
+    });
   }
 );
 
@@ -130,29 +140,25 @@ export const utilsReducer = createSlice({
         };
       })
 
-      .addCase(obtenerConsecutivoAsync.pending, (state) => {
+      .addCase(crearTirillaAsync.pending, (state) => {
         state.estado = {
           isLoading: true,
           success: false,
           error: false,
         };
       })
-      .addCase(obtenerConsecutivoAsync.fulfilled, (state, action) => {
+      .addCase(crearTirillaAsync.fulfilled, (state) => {
         state.estado = {
           isLoading: false,
-          success: false,
+          success: true,
           error: false,
         };
-        state.value = {
-          ...state.value,
-          consecutivo: action.payload,
-        };
       })
-      .addCase(obtenerConsecutivoAsync.rejected, (state, action) => {
+      .addCase(crearTirillaAsync.rejected, (state) => {
         state.estado = {
           isLoading: false,
           success: false,
-          error: CodeError(action.error.code),
+          error: "Error, no fue posible guardar la boleta de ventas",
         };
       })
 
@@ -179,6 +185,28 @@ export const utilsReducer = createSlice({
           isLoading: false,
           success: false,
           error: CodeError(action.error.code),
+        };
+      })
+
+      .addCase(actualizarTirillaAsync.pending, (state) => {
+        state.estado = {
+          isLoading: true,
+          success: false,
+          error: false,
+        };
+      })
+      .addCase(actualizarTirillaAsync.fulfilled, (state) => {
+        state.estado = {
+          isLoading: false,
+          success: true,
+          error: false,
+        };
+      })
+      .addCase(actualizarTirillaAsync.rejected, (state) => {
+        state.estado = {
+          isLoading: false,
+          success: false,
+          error: "Error, no fue posible actualizar la boleta de ventas",
         };
       })
 
@@ -211,6 +239,6 @@ export const utilsReducer = createSlice({
 });
 
 export const initialUtils = (state) => state.utils.value;
-export const estadoProceso = (state) => state.usuarios.estado;
+export const estadoProceso = (state) => state.utils.estado;
 
 export default utilsReducer.reducer;

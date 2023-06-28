@@ -30,6 +30,7 @@ export const obtenerBarrioAsync = createAsyncThunk(
     return response.data;
   }
 );
+
 export const crearBarrioAsync = createAsyncThunk(
   "barrios/crear",
   async (data) => {
@@ -39,6 +40,7 @@ export const crearBarrioAsync = createAsyncThunk(
     return barrio;
   }
 );
+
 export const actualizarBarrioAsync = createAsyncThunk(
   "barrios/actualizar",
   async (data) => {
@@ -54,6 +56,7 @@ export const eliminarBarrioAsync = createAsyncThunk(
     return id;
   }
 );
+
 export const barriosReducer = createSlice({
   name: "barrios",
   initialState,
