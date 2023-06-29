@@ -48,16 +48,6 @@ export const obtenerPedidoIdAsync = createAsyncThunk(
   }
 );
 
-export const obtenerPedidoDomicilioAsync = createAsyncThunk(
-  "pedidos/obtenerDomicilio",
-  async (data) => {
-    const response = await api.post(`pedidos/${endpoints.obtener}`, {
-      ...data,
-    });
-    return response.data;
-  }
-);
-
 export const crearPedidoAsync = createAsyncThunk(
   "pedidos/crear",
   async (data) => {
@@ -163,32 +153,9 @@ export const pedidosReducer = createSlice({
           success: false,
           error: false,
         };
-        state.value = action.payload.filter((x) => !x.cliente);
+        state.value = action.payload;
       })
       .addCase(obtenerPedidoAsync.rejected, (state, action) => {
-        state.estado = {
-          isLoading: false,
-          success: false,
-          error: CodeError(action.error.code),
-        };
-      })
-
-      .addCase(obtenerPedidoDomicilioAsync.pending, (state) => {
-        state.estado = {
-          isLoading: true,
-          success: false,
-          error: false,
-        };
-      })
-      .addCase(obtenerPedidoDomicilioAsync.fulfilled, (state, action) => {
-        state.estado = {
-          isLoading: false,
-          success: false,
-          error: false,
-        };
-        state.value = action.payload.filter((x) => x.cliente);
-      })
-      .addCase(obtenerPedidoDomicilioAsync.rejected, (state, action) => {
         state.estado = {
           isLoading: false,
           success: false,

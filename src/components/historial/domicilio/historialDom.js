@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   estadoProceso,
   initialPedidos,
-  obtenerPedidoDomicilioAsync,
+  obtenerPedidoAsync,
 } from "../../../redux/reducers/pedidosReducer";
 import { disenoToast } from "../../dashboard/disenoToastBase";
 import { Badge } from "reactstrap";
@@ -45,7 +45,7 @@ function HistorialDom() {
   const cargarPedidos = useCallback(() => {
     const startOfToday = moment(date).startOf("day");
     const endOfToday = moment(date).endOf("day");
-    dispatch(obtenerPedidoDomicilioAsync({ startOfToday, endOfToday }));
+    dispatch(obtenerPedidoAsync({ startOfToday, endOfToday }));
   }, [dispatch, date]);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function HistorialDom() {
   }, [cargarPedidos]);
 
   useEffect(() => {
-    const newData = pedidos.map((item) => ({ ...item }));
+    const newData = pedidos.filter((x) => x.cliente);
     setData(newData);
   }, [pedidos]);
 

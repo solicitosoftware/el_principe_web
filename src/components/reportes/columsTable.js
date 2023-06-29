@@ -8,10 +8,6 @@ export const colunm = [
     render: (rowData) => (rowData.fecha ? formatoFecha(rowData.fecha) : null),
   },
   {
-    title: "Turno",
-    field: "turnoDomicilio",
-  },
-  {
     title: "Medio Pago",
     field: "medioPago",
     render: (rowData) => capitalize(rowData?.medioPago),

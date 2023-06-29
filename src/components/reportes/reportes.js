@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import {
   initialPedidos,
-  obtenerPedidoDomicilioAsync,
+  obtenerPedidoAsync,
 } from "../../redux/reducers/pedidosReducer";
 import { disenoToast } from "../dashboard/disenoToastBase";
 import {
@@ -73,7 +73,7 @@ function Reportes() {
   const cargarPedidos = useCallback(() => {
     const startOfToday = moment(date).startOf("day");
     const endOfToday = moment(date).endOf("day");
-    dispatch(obtenerPedidoDomicilioAsync({ startOfToday, endOfToday }));
+    dispatch(obtenerPedidoAsync({ startOfToday, endOfToday }));
     obtenerTirilla();
   }, [dispatch, date]);
 

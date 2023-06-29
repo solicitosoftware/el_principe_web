@@ -7,8 +7,6 @@ import useColumsTable from "./columsTable";
 import ContainerBase from "../../dashboard/containerBase";
 import TableBase from "../../dashboard/tableBase";
 import { useReactToPrint } from "react-to-print";
-import { FaEquals } from "react-icons/fa";
-import { RiDeleteBack2Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import {
   initialProductos,
@@ -99,8 +97,6 @@ function HistorialPV() {
 
   const [modalPago, setPago] = useState(false);
 
-  const [detallePago, setDetallePago] = useState({});
-
   const handlePrint = useReactToPrint({
     content: () => componentPrint.current,
   });
@@ -116,7 +112,7 @@ function HistorialPV() {
   }, [cargarPedidos]);
 
   useEffect(() => {
-    const newData = pedidos.map((item) => ({ ...item }));
+    const newData = pedidos.filter((x) => !x.cliente);
     setData(newData);
   }, [pedidos]);
 
@@ -370,7 +366,6 @@ function HistorialPV() {
     setModal(false);
     setPedidoEdit({});
     setActual([]);
-    setDetallePago({});
     setTotal(0);
     setIpoconsumo(0);
     setComentario(false);
