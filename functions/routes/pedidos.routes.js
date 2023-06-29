@@ -98,7 +98,7 @@ router.put(
           observaciones: request.body.observaciones,
           medioPago: request.body.medioPago,
           productos: request.body.productos,
-          movimiento: time,
+          movimiento: request.body.movimiento ? time : request.body.movimiento,
           cliente: request.body.cliente,
           recibido: request.body.recibido,
           detallePago: request.body.detallePago,

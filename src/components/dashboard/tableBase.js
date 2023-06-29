@@ -110,10 +110,12 @@ function TableBase({
           },
           isEditHidden: () => !validarPermiso("editar"),
           isDeleteHidden: () => !validarPermiso("eliminar"),
-          onRowUpdate: (newData) =>
+          onRowUpdate: (newData, oldData) =>
             new Promise((resolve) => {
-              actualizar(newData);
-              resolve();
+              setTimeout(() => {
+                actualizar(newData, oldData);
+                resolve();
+              }, 1000);
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve) => {

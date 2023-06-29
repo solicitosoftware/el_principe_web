@@ -269,27 +269,16 @@
 }
 
 .div-block {
+  display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 90vh;
-  width: 18%;
-}
-
-.div-block-1 {
-  flex-direction: column;
-  justify-content: center;
-  min-height: 90vh;
-  width: 18%;
+  flex-wrap: wrap-reverse;
+  align-content: flex-start;
+  margin-right: 10px;
+  width: 50%;
+  height: 600px;
 }
 
 .div-block img {
-  cursor: pointer;
-  height: 180px;
-  width: 160px;
-  margin: 10px;
-}
-
-.div-block-1 img {
   cursor: pointer;
   height: 180px;
   width: 160px;
@@ -369,11 +358,6 @@
     position: relative;
     left: -100px;
     min-height: 80vh;
-  }
-
-  .div-block-1 {
-    margin-top: 1vh;
-    margin-right: 20px;
   }
 
   .div-pedido-productos {
@@ -478,17 +462,7 @@
     margin-right: 5%;
   }
 
-  .div-block-1 {
-    margin-top: 2vh;
-    width: 20%;
-    margin-right: 5%;
-  }
-
   .div-block a img {
-    height: 27vh;
-  }
-
-  .div-block-1 a img {
     height: 27vh;
   }
 
@@ -577,12 +551,6 @@
   .div-block {
     margin-top: 11vh;
     width: 40%;
-  }
-
-  .div-block-1 {
-    margin-top: 12vh;
-    width: 40%;
-    margin-right: 11%;
   }
 
   .div-btn-inicio-ped {

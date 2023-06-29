@@ -683,13 +683,27 @@ function Domicilios() {
     setModalNoty(false);
   };
 
-  const actualizarPedido = (value) => {
-    const valor = value.cliente.barrio.valor;
+  const compararPedidos = (newValue, oldValue, domiciliario) => {
+    delete oldValue.domiciliario;
+    delete newValue.domiciliario;
+    const pedidoInicialString = stringify(oldValue);
+    const pedidoFinalString = stringify(newValue);
+    if (pedidoInicialString === pedidoFinalString && domiciliario) {
+      return undefined;
+    }
+    return true;
+  };
+
+  const actualizarPedido = (value, oldValue) => {
     const domiciliarioSelect =
       value.domiciliario &&
       domiciliarios.find((x) => x.id === value.domiciliario.id);
+    const modificaDomiciliario =
+      value.domiciliario?.nombre !== domiciliarioSelect?.nombre;
+    value.movimiento = compararPedidos(value, oldValue, modificaDomiciliario);
+    const valor = value.cliente.barrio.valor;
     const barrioSelect = barrios.find((x) => x.id === value.cliente.barrio.id);
-    if (value.domiciliario?.nombre !== domiciliarioSelect?.nombre) {
+    if (modificaDomiciliario) {
       if (domiciliarioSelect) {
         value.domiciliario = domiciliarioSelect;
         value.estado = "Despachado";
@@ -1041,7 +1055,7 @@ function Domicilios() {
         editar={(oldData) => pedidoActual(oldData, "editar")}
         eliminar={(oldData) => pedidoActual(oldData, "cancelar")}
         entregar={(oldData) => pedidoActual(oldData, "entregar")}
-        actualizar={(newData) => actualizarPedido(newData)}
+        actualizar={(newData, oldData) => actualizarPedido(newData, oldData)}
         imprimir={(oldData) => pedidoActual(oldData, "imprimir")}
       />
     );

@@ -9,6 +9,7 @@ import domicilio from "../../images/iconos/btn-domicilios.png";
 import producto from "../../images/iconos/btn-productos.png";
 import categoria from "../../images/iconos/btn-categoria.png";
 import reporte from "../../images/iconos/btn-reportes.png";
+import barrios from "../../images/iconos/btn-barrios.png";
 import cliente from "../../images/iconos/btn-usuarios.png";
 import MenuBase from "../dashboard/menuBase";
 import useSessionStorage from "../utils/useSessionStorage";
@@ -21,6 +22,7 @@ import { obtenerMunicipioAsync } from "../../redux/reducers/municipiosReducer";
 import { obtenerProductoAsync } from "../../redux/reducers/productosReducer";
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import ReactLoading from "react-loading";
+import { roles } from "../utils/rolesPermisos";
 import { obtenerUsuarioAsync } from "../../redux/reducers/usuariosReducer";
 import useUsuarioPermisos from "../utils/usuarioPermisos";
 
@@ -201,14 +203,26 @@ function Home() {
     );
   };
 
-  return (
-    <div className="contain home">
-      <div className="p-4 cursor-pointer logout md:h-screen">
-        <GiExitDoor size="5em" onClick={() => logout()} />
-      </div>
-      <div className="logo" />
-      <div className="div-block">
-        {permisosRol?.pedidos && (
+  const iconosRender = (name) => {
+    switch (name) {
+      case "categorias":
+        return (
+          <img
+            src={categoria}
+            alt="categorias"
+            onClick={() => handleRedirect("categorias")}
+          />
+        );
+      case "barrios":
+        return (
+          <img
+            src={barrios}
+            alt="barrios"
+            onClick={() => handleRedirect("barrios")}
+          />
+        );
+      case "pedidos":
+        return (
           <img
             src={pedido}
             alt="pedidos"
@@ -220,9 +234,9 @@ function Home() {
                 : handleRedirect("pedidos")
             }
           />
-        )}
-
-        {(permisosRol?.domicilios || permisosRol?.historialdomicilios) && (
+        );
+      case "domicilios":
+        return (
           <img
             src={domicilio}
             alt="domicilios"
@@ -234,35 +248,9 @@ function Home() {
                 : handleRedirect("historialDomicilios")
             }
           />
-        )}
-
-        {permisosRol?.productos && (
-          <img
-            src={producto}
-            alt="productos"
-            onClick={() => handleRedirect("productos")}
-          />
-        )}
-      </div>
-
-      <div className="div-block-1">
-        {permisosRol?.categorias && (
-          <img
-            src={categoria}
-            alt="categorias"
-            onClick={() => handleRedirect("categorias")}
-          />
-        )}
-
-        {permisosRol?.reportes && (
-          <img
-            src={reporte}
-            alt="reportes"
-            onClick={() => handleRedirect("reportes")}
-          />
-        )}
-
-        {(permisosRol?.clientes || permisosRol?.empleados) && (
+        );
+      case "clientes":
+        return (
           <img
             src={cliente}
             alt="clientes"
@@ -274,8 +262,43 @@ function Home() {
                 : handleRedirect("empleados")
             }
           />
-        )}
+        );
+      case "productos":
+        return (
+          <img
+            src={producto}
+            alt="productos"
+            onClick={() => handleRedirect("productos")}
+          />
+        );
+      case "reportes":
+        return (
+          <img
+            src={reporte}
+            alt="reportes"
+            onClick={() => handleRedirect("reportes")}
+          />
+        );
+    }
+  };
+
+  const cargarOrdenIcon = () => {
+    const permisos = roles.find((x) => x.value === login.rol).permisos;
+    const orden = [];
+    for (var propiedad in permisos) {
+      const icono = iconosRender(propiedad);
+      orden.push(icono);
+    }
+    return orden;
+  };
+
+  return (
+    <div className="contain home">
+      <div className="p-4 cursor-pointer logout md:h-screen">
+        <GiExitDoor size="5em" onClick={() => logout()} />
       </div>
+      <div className="logo" />
+      <div className="div-block">{cargarOrdenIcon()}</div>
       {modalData ? (
         <Modal
           scrollable

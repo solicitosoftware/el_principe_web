@@ -31,11 +31,10 @@ export const roles = [
     value: 3,
     rol: "Administrador",
     permisos: {
-      barrios: {
+      reportes: {
         cargar: true,
-        crear: true,
-        editar: true,
-        eliminar: true,
+        fecha: true,
+        boleta: true,
       },
       categorias: {
         cargar: true,
@@ -47,6 +46,12 @@ export const roles = [
         cargar: true,
         pagoTotal: true,
         abono: true,
+      },
+      barrios: {
+        cargar: true,
+        crear: true,
+        editar: true,
+        eliminar: true,
       },
       domicilios: {
         editar: true,
@@ -69,21 +74,12 @@ export const roles = [
         imprimir: true,
         fecha: true,
       },
-      pedidos: {
-        puntoVenta: true,
-        domicilios: true,
-      },
       productos: {
         cargar: true,
         crear: true,
         editarModal: true,
         eliminar: true,
         precio: true,
-      },
-      reportes: {
-        cargar: true,
-        fecha: true,
-        boleta: true,
       },
       clientes: {
         cargar: true,
@@ -96,6 +92,10 @@ export const roles = [
         crear: true,
         editarModal: true,
         eliminar: true,
+      },
+      pedidos: {
+        puntoVenta: true,
+        domicilios: true,
       },
     },
   },
@@ -110,9 +110,6 @@ export const roles = [
         eliminar: true,
         imprimir: true,
       },
-      pedidos: {
-        domicilios: true,
-      },
       productos: {
         cargar: true,
         crear: true,
@@ -123,6 +120,9 @@ export const roles = [
         crear: true,
         editarModal: true,
         eliminar: true,
+      },
+      pedidos: {
+        domicilios: true,
       },
     },
   },
@@ -163,10 +163,6 @@ export const roles = [
         imprimir: true,
         fecha: true,
       },
-      pedidos: {
-        puntoVenta: true,
-        domicilios: true,
-      },
       productos: {
         cargar: true,
         crear: true,
@@ -179,6 +175,10 @@ export const roles = [
         crear: true,
         editarModal: true,
         eliminar: true,
+      },
+      pedidos: {
+        puntoVenta: true,
+        domicilios: true,
       },
     },
   },
@@ -200,9 +200,6 @@ export const roles = [
         entregar: true,
         pendientes: true,
       },
-      pedidos: {
-        domicilios: true,
-      },
       productos: {
         cargar: true,
         crear: true,
@@ -213,6 +210,9 @@ export const roles = [
         crear: true,
         editarModal: true,
         eliminar: true,
+      },
+      pedidos: {
+        domicilios: true,
       },
     },
   },
