@@ -43,7 +43,7 @@ function Reportes() {
 
   const utils = useSelector(initialUtils);
 
-  const [vendidos, setVendidos] = useState([]);
+  const [vendidos, setVendidos] = useState(null);
 
   const [consecutivo, setConsecutivo] = useState(0);
 
@@ -306,15 +306,17 @@ function Reportes() {
     >
       <ToastContainer />
       <div className="hidden">
-        <ComponentToPrint
-          ref={componentPrint}
-          data={vendidos}
-          fecha={date}
-          ventas={pedidos}
-          consecutivo={
-            boletaExistente() ? utils.tirilla.consecutivo : consecutivo
-          }
-        />
+        {vendidos && (
+          <ComponentToPrint
+            ref={componentPrint}
+            data={vendidos}
+            fecha={date}
+            ventas={pedidos}
+            consecutivo={
+              boletaExistente() ? utils.tirilla.consecutivo : consecutivo
+            }
+          />
+        )}
       </div>
       <TableBase
         loading={estado.isLoading}

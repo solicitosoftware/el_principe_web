@@ -6,7 +6,7 @@ router.put("/api/getTurnoDomicilio/:fecha", async (request, response) => {
   try {
     const values = await firebase
       .collection("pedidos")
-      .where("fecha", "<=", timestamp(new Date(request.params.fecha)))
+      .where("fecha", ">=", timestamp(new Date(request.params.fecha)))
       .orderBy("fecha", "desc")
       .orderBy("turnoDomicilio", "desc")
       .limit(1)
@@ -24,7 +24,7 @@ router.put("/api/getTurnoCaja/:fecha", async (request, response) => {
   try {
     const values = await firebase
       .collection("pedidos")
-      .where("fecha", "<=", timestamp(new Date(request.params.fecha)))
+      .where("fecha", ">=", timestamp(new Date(request.params.fecha)))
       .orderBy("fecha", "desc")
       .orderBy("turno", "desc")
       .limit(1)
