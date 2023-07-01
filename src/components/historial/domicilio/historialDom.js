@@ -14,7 +14,7 @@ import {
 } from "../../../redux/reducers/pedidosReducer";
 import { disenoToast } from "../../dashboard/disenoToastBase";
 import { Badge } from "reactstrap";
-import { formatoPrecio } from "../../utils";
+import { formatoPrecio, salsas } from "../../utils";
 import { ComponentToPrint } from "../../utils/print";
 
 const moment = require("moment");
@@ -70,21 +70,6 @@ function HistorialDom() {
   useEffect(() => {
     validarEstado();
   }, [validarEstado]);
-
-  const salsas = (producto) => {
-    const { bbq, rosa, pina } = producto.salsas;
-    var detalle = [];
-    if (bbq) {
-      detalle.push(" Bbq");
-    }
-    if (rosa) {
-      detalle.push(" Rosada");
-    }
-    if (pina) {
-      detalle.push(" Piña");
-    }
-    return [...detalle];
-  };
 
   //metodo para cargar detalle del pedido
   const detallePedido = (value) => {

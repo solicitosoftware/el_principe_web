@@ -72,3 +72,18 @@ export const capitalize = (val) => {
   }
   return val;
 };
+
+export const salsas = (producto) => {
+  const { bbq, rosa, pina } = producto.salsas;
+  var detalle = [];
+  if (bbq) {
+    detalle.push(" Bbq");
+  }
+  if (rosa) {
+    detalle.push(" Rosada");
+  }
+  if (pina) {
+    detalle.push(" Piña");
+  }
+  return [...detalle];
+};

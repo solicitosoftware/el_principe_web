@@ -102,6 +102,7 @@ router.put(
           cliente: request.body.cliente,
           recibido: request.body.recibido,
           detallePago: request.body.detallePago,
+          historial: request.body.historial,
         });
       return response.status(200).json(result);
     } catch (error) {
@@ -165,6 +166,7 @@ router.put("/api/cancelPedido/:pedido_id", async (request, response) => {
         comentario: request.body.comentario,
         estado: request.body.estado,
         total: request.body.total,
+        detallePago: request.body.detallePago,
         deuda: request.body.deuda || null,
         ipoconsumo: request.body.ipoconsumo,
         movimiento: time,

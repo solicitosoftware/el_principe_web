@@ -297,6 +297,17 @@
   max-height: 70vh;
 }
 
+.table-title {
+  text-align: center;
+  background-color: #ed8936;
+  color: white;
+}
+
+.table-row {
+  display: flex;
+  flex-direction: column;
+}
+
 /* NOTIFICATIONS ICON */
 .campanaNotificacion {
   margin-top: 10px;

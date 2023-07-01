@@ -41,6 +41,7 @@ router.put("/api/updateProducto/:producto_id", async (request, response) => {
       imagen: request.body.imagen,
       descripcion: request.body.descripcion,
       orden: request.body.orden,
+      disponible: request.body.disponible,
     });
     return response.status(200).json();
   } catch (error) {

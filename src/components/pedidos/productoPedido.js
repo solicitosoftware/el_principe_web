@@ -6,20 +6,21 @@ import NumberFormat from "react-number-format";
 import "../../css/general.css";
 import { Button, ButtonGroup } from "reactstrap";
 import { IoWaterOutline } from "react-icons/io5";
+import { initialCategorias } from "../../redux/reducers/categoriasReducer";
+import { useSelector } from "react-redux";
 
 function ProductoPedido({ producto, guardar, editar }) {
   const [bbq, setBbq] = useState(true);
   const [rosa, setRosa] = useState(true);
   const [pina, setPina] = useState(true);
-
-  const [modificar] = useState(producto.modificar);
+  const categorias = useSelector(initialCategorias);
+  const categoriaProducto =
+    categorias.find((x) => x.id === producto.categoria.id) ||
+    producto.categoria;
 
   //metodo para agregar un producto al pedido
   function agregarProducto(params) {
     let actual = { ...params };
-    actual.id = modificar
-      ? Math.random().toString().replace(".", "")
-      : actual.id;
     actual.cantidad = 1;
     actual.salsas = {};
     if (actual.categoria.salsas) {
@@ -65,7 +66,9 @@ function ProductoPedido({ producto, guardar, editar }) {
         {!editar && (
           <img
             className="img-pedido"
-            src={`${process.env.PUBLIC_URL}/assets/productos/${producto.id}.jpg`}
+            src={`${process.env.PUBLIC_URL}/assets/productos/${
+              producto.id.split("-")[0]
+            }.jpg`}
             alt="producto"
             onClick={() => agregarProducto(producto)}
           />
@@ -78,7 +81,7 @@ function ProductoPedido({ producto, guardar, editar }) {
           >
             {nombre.toUpperCase()}
           </text>
-          {producto.categoria.salsas === true ? (
+          {categoriaProducto?.salsas === true ? (
             <ButtonGroup className="mt-1">
               <Button
                 onClick={() => setBbq(!bbq)}
@@ -116,13 +119,13 @@ function ProductoPedido({ producto, guardar, editar }) {
                 color={null}
               >
                 <text className="text-xs text-center">
-                  {producto.categoria.nombre.toUpperCase()}
+                  {categoriaProducto?.nombre.toUpperCase()}
                 </text>
               </Button>
             </ButtonGroup>
           )}
           <div className="div-agregar">
-            {modificar ? (
+            {producto?.modificar ? (
               <NumberFormat
                 className="mr-3"
                 allowNegative={false}

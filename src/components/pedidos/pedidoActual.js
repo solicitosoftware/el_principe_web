@@ -2,29 +2,13 @@ import React, { useState } from "react";
 import { ListGroupItem, Input } from "reactstrap";
 import NumberFormat from "react-number-format";
 import { BsTrash } from "react-icons/bs";
-import { formatoPrecio } from "../utils";
+import { formatoPrecio, salsas } from "../utils";
 import Messages from "../utils/message";
 
 function PedidoActual({ producto, eliminar, modificarCantidad }) {
   const [open, setOpen] = useState(false);
 
   const [error, setError] = useState("");
-
-  //Metodo para seleccionar una salsa
-  function salsas() {
-    const { bbq, rosa, pina } = producto.salsas;
-    let detalle = [];
-    if (bbq) {
-      detalle.push(" Bbq");
-    }
-    if (rosa) {
-      detalle.push(" Rosada");
-    }
-    if (pina) {
-      detalle.push(" Piña");
-    }
-    return [...detalle];
-  }
 
   //Metodo para eliminar un producto de la caja
   function eliminarProducto() {
@@ -58,7 +42,7 @@ function PedidoActual({ producto, eliminar, modificarCantidad }) {
   }
 
   let total = producto.cantidad * producto.precio;
-  let salsa = salsas();
+  let salsa = salsas(producto);
   return (
     <ListGroupItem>
       <div className="flex flex-row justify-between items-center">

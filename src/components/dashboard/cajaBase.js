@@ -51,6 +51,11 @@ import {
 import { productoInterno } from "./productoInterno";
 import PagoParcial from "../pedidos/pagoParcial";
 import useUsuarioPermisos from "../utils/usuarioPermisos";
+import {
+  initialCategorias,
+  estadoProceso as estadoProcesoCategorias,
+  obtenerCategoriaAsync,
+} from "../../redux/reducers/categoriasReducer";
 
 const moment = require("moment");
 
@@ -63,11 +68,15 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
 
   const productos = useSelector(initialProductos);
 
+  const categorias = useSelector(initialCategorias);
+
   const estado = useSelector(estadoProceso);
 
   const estadoUsuario = useSelector(estadoProcesoUsuario);
 
   const estadoProductos = useSelector(estadoProcesoProductos);
+
+  const estadoCategorias = useSelector(estadoProcesoCategorias);
 
   const estadoTurno = useSelector(estadoProcesoTurno);
 
@@ -79,6 +88,8 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
     rol: 1,
     sede: null,
   };
+
+  const [data, setData] = useState([]);
 
   const [login] = useSessionStorage("login", initialLogin);
 
@@ -130,11 +141,40 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
     }
   }, [dispatch, usuario, login.id]);
 
+  const cargarCategorias = useCallback(() => {
+    if (categorias.length === 0) {
+      dispatch(obtenerCategoriaAsync());
+    }
+  }, [dispatch, categorias]);
+
   const cargarProductos = useCallback(() => {
     if (productos.length === 0) {
       dispatch(obtenerProductoAsync());
+    } else {
+      const cajaDomicilio = Object.values(domicilio).length > 0;
+      const newData = productos?.reduce((result, item) => {
+        if (
+          permisosRol.pedidos?.puntoVenta &&
+          item?.disponible?.caja &&
+          !cajaDomicilio
+        ) {
+          result.push(item);
+        }
+        if (
+          permisosRol.pedidos?.domicilios &&
+          item?.disponible?.domicilio &&
+          cajaDomicilio
+        ) {
+          result.push(item);
+        }
+        if (!item.disponible) {
+          result.push(item);
+        }
+        return result;
+      }, []);
+      setData(newData);
     }
-  }, [dispatch, productos]);
+  }, [dispatch, productos, permisosRol, domicilio]);
 
   const calcularTotal = useCallback(() => {
     let suma =
@@ -174,6 +214,10 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
   useEffect(() => {
     cargarProductos();
   }, [cargarProductos]);
+
+  useEffect(() => {
+    cargarCategorias();
+  }, [cargarCategorias]);
 
   useEffect(() => {
     calcularTotal();
@@ -347,6 +391,7 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
       {estado.isLoading ||
       estadoUsuario.isLoading ||
       estadoProductos.isLoading ||
+      estadoCategorias.isLoading ||
       estadoTurno.isLoading ? (
         <Spinner />
       ) : (
@@ -381,7 +426,7 @@ function CajaBase({ imprimir, domicilio, reiniciar, children }) {
             <div className="text-center flex flex-col">
               <div className="lista-productos">
                 {ordenarProductos([
-                  ...productos.filter((x) => x.estado === true),
+                  ...data.filter((x) => x.estado === true),
                   productoInterno,
                 ]).map((value, index) => {
                   return (

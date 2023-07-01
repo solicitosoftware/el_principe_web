@@ -6,7 +6,7 @@ export const productoInterno = {
     salsas: true,
     descripcion: "Interno",
   },
-  id:'elprincipe-45296',
+  id: `elprincipe-${Math.random().toString().replace(".", "")}`,
   descripcion: "Producto Interno",
   estado: true,
   imagen:

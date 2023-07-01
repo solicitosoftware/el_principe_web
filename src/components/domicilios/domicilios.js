@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { FirebaseContext } from "../../firebase";
-import { diffMinutos, formatoPrecio } from "../utils";
+import { diffMinutos, formatoPrecio, salsas } from "../utils";
 import "../../css/general.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -23,6 +23,7 @@ import PedidosNoty from "./pedidosNoty";
 import ContainerBase from "../dashboard/containerBase";
 import TableBase from "../dashboard/tableBase";
 import {
+  Badge,
   Button,
   Input,
   Label,
@@ -163,6 +164,8 @@ function Domicilios() {
 
   const [actual, setActual] = useState([]);
 
+  const [productosHistory, setProductosHistory] = useState("");
+
   const [pendiente, setPendiente] = useState([]);
 
   const [pedidosApp, setPedidosApp] = useState([]);
@@ -178,6 +181,8 @@ function Domicilios() {
   const [modalPen, setModalPen] = useState(false);
 
   const [modalComentario, setComentario] = useState(false);
+
+  const [modalHistorial, setHistorial] = useState(false);
 
   const [modalpago, setPago] = useState(false);
 
@@ -639,6 +644,7 @@ function Domicilios() {
       deuda: false,
       total: 0,
       ipoconsumo: 0,
+      detallePago: { efectivo: 0, transferencia: 0 },
     };
     dispatch(cancelarPedidoAsync(datos));
   };
@@ -747,11 +753,16 @@ function Domicilios() {
         break;
       case "editar":
         setPedidoEdit(pedido);
+        setProductosHistory(JSON.stringify(pedido.productos));
         setModal(true);
         break;
       case "cancelar":
         setPedidoEdit(pedido);
         setComentario(true);
+        break;
+      case "historial":
+        setPedidoEdit(pedido);
+        setHistorial(true);
         break;
       case "agregar":
         setPedidoEdit(pedido);
@@ -843,6 +854,12 @@ function Domicilios() {
       productos: [...actual],
       recibido: null,
     };
+    if (!pedidoEdit?.historial) {
+      values.historial = {
+        usuario: pedidoEdit.usuario,
+        productos: JSON.parse(productosHistory),
+      };
+    }
     setVenta(values);
     dispatch(actualizarPedidoDomicilioAsync(values));
   };
@@ -851,8 +868,10 @@ function Domicilios() {
     setModal(false);
     setModalPen(false);
     setComentario(false);
+    setHistorial(false);
     setPago(false);
     setPedidoEdit({});
+    setProductosHistory("");
     setVenta({});
     setActual([]);
     setTotal(0);
@@ -863,6 +882,146 @@ function Domicilios() {
   const abrirModalPago = () => {
     setModal(false);
     setPago(true);
+  };
+
+  //metodo para mostrar el detalle de una venta
+  const detalleVenta = (oldData, newData) => {
+    var detalleOld = oldData.map((item) => {
+      const diferencia = newData.filter(
+        (x) =>
+          x.id === item.id && stringify(x.salsas) === stringify(item.salsas)
+      );
+      const salsa = salsas(item);
+      return diferencia.length === 0 ? (
+        <tr className="table-danger">
+          <td className="table-row">
+            <s>{item.nombre.toUpperCase()}</s>
+            <text className="text-sm">
+              {salsa.length > 0
+                ? `Salsas:${salsa}`
+                : item.categoria.nombre !== "Fritos"
+                ? item.categoria.nombre
+                : "Sin salsas"}
+            </text>
+          </td>
+          <td className="text-center">
+            <h5>
+              <Badge>{item.cantidad}</Badge>
+            </h5>
+          </td>
+        </tr>
+      ) : (
+        <tr>
+          <td className="table-row">
+            {item.nombre.toUpperCase()}
+            <text className="text-sm">
+              {salsa.length > 0
+                ? `Salsas:${salsa}`
+                : item.categoria.nombre !== "Fritos"
+                ? item.categoria.nombre
+                : "Sin salsas"}
+            </text>
+          </td>
+          <td className="text-center">
+            <h5>
+              <Badge>{item.cantidad}</Badge>
+            </h5>
+          </td>
+        </tr>
+      );
+    });
+
+    var detalleNew = newData.map((item) => {
+      const diferencia = oldData.filter(
+        (x) =>
+          x.id === item.id && stringify(x.salsas) === stringify(item.salsas)
+      );
+      const salsa = salsas(item);
+      return diferencia.length === 0 ? (
+        <tr className="table-success">
+          <td className="table-row">
+            {item.nombre.toUpperCase()}
+            <text className="text-sm">
+              {salsa.length > 0
+                ? `Salsas:${salsa}`
+                : item.categoria.nombre !== "Fritos"
+                ? item.categoria.nombre
+                : "Sin salsas"}
+            </text>
+          </td>
+          <td className="text-center">
+            <h5>
+              <Badge>{item.cantidad}</Badge>
+            </h5>
+          </td>
+        </tr>
+      ) : (
+        <tr>
+          <td className="table-row">
+            {item.nombre.toUpperCase()}
+            <text className="text-sm">
+              {salsa.length > 0
+                ? `Salsas:${salsa}`
+                : item.categoria.nombre !== "Fritos"
+                ? item.categoria.nombre
+                : "Sin salsas"}
+            </text>
+          </td>
+          <td className="text-center">
+            <h5>
+              <Badge
+                color={`${
+                  diferencia[0].cantidad > item.cantidad
+                    ? "danger"
+                    : diferencia[0].cantidad < item.cantidad
+                    ? "success"
+                    : "secondary"
+                }`}
+              >
+                {item.cantidad}
+              </Badge>
+            </h5>
+          </td>
+        </tr>
+      );
+    });
+
+    return (
+      <div className="flex">
+        <div style={{ width: "50%", padding: 10 }}>
+          <Table striped bordered>
+            <thead>
+              <tr>
+                <th colSpan="2" className="table-title">
+                  PEDIDO INICIAL
+                </th>
+              </tr>
+              <tr>
+                <th>PRODUCTOS</th>
+                <th>CANTIDAD</th>
+              </tr>
+            </thead>
+            <tbody>{detalleOld}</tbody>
+          </Table>
+        </div>
+        <div style={{ width: "50%", padding: 10 }}>
+          <Table striped bordered>
+            <thead>
+              <tr>
+                <th colSpan="2" className="table-title">
+                  PEDIDO ACTUAL
+                </th>
+              </tr>
+              <tr>
+                <th>PRODUCTOS</th>
+                <th>CANTIDAD</th>
+              </tr>
+            </thead>
+            <tbody>{detalleNew}</tbody>
+          </Table>
+        </div>
+      </div>
+    );
   };
 
   const cargarComponente = () => {
@@ -971,6 +1130,32 @@ function Domicilios() {
         </Modal>
       );
     }
+    if (modalHistorial) {
+      return (
+        <Modal
+          size="lg"
+          scrollable
+          className="flex items-center"
+          style={{ height: "90vh" }}
+          isOpen={modalHistorial}
+        >
+          <ModalHeader className="modal-header">
+            Historico Productos Pedidos
+          </ModalHeader>
+          <ModalBody className="modal-detalle-ped">
+            {detalleVenta(
+              pedidoEdit?.historial.productos,
+              pedidoEdit?.productos
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <div className="modal-boton">
+              <Button onClick={limpiarState}>Cerrar</Button>
+            </div>
+          </ModalFooter>
+        </Modal>
+      );
+    }
     if (modal) {
       return (
         <Modal
@@ -1057,6 +1242,7 @@ function Domicilios() {
         entregar={(oldData) => pedidoActual(oldData, "entregar")}
         actualizar={(newData, oldData) => actualizarPedido(newData, oldData)}
         imprimir={(oldData) => pedidoActual(oldData, "imprimir")}
+        historial={(oldData) => pedidoActual(oldData, "historial")}
       />
     );
   };

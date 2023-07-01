@@ -27,6 +27,7 @@ import {
   FormGroup,
   Input,
   Label,
+  ButtonGroup,
 } from "reactstrap";
 import TableBase from "../dashboard/tableBase";
 import { useFormik } from "formik";
@@ -38,6 +39,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { disenoToast } from "../dashboard/disenoToastBase";
 import { colunm } from "./columsTable";
 import useUsuarioPermisos from "../utils/usuarioPermisos";
+import colors from "../utils/colors";
 
 function Productos() {
   const { firebase } = useContext(FirebaseContext);
@@ -75,6 +77,11 @@ function Productos() {
       imagen: "",
       descripcion: "",
       orden: 1,
+      disponible: {
+        caja: true,
+        domicilio: true,
+        app: true,
+      },
     },
     validationSchema: Yup.object({
       nombre: Yup.string()
@@ -166,6 +173,7 @@ function Productos() {
       imagen: producto.imagen,
       descripcion: producto.descripcion,
       orden: producto.orden,
+      disponible: producto?.disponible ?? formik.initialValues.disponible,
     });
     changeModal();
   };
@@ -190,6 +198,7 @@ function Productos() {
       imagen: formik.values.imagen,
       descripcion: formik.values.descripcion,
       orden: formik.values.orden,
+      disponible: formik.values.disponible,
     };
   };
 
@@ -431,6 +440,87 @@ function Productos() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
+                </FormGroup>
+                {formik.touched.orden && formik.errors.orden ? (
+                  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-2">
+                    <p className="mb-0">{formik.errors.orden}</p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="col">
+                <Label for="orden">Disponible En:</Label>
+                <FormGroup>
+                  <ButtonGroup>
+                    <Button
+                      style={{
+                        backgroundColor: formik.values.disponible.caja
+                          ? colors.principal
+                          : "white",
+                        color: formik.values.disponible.caja
+                          ? "white"
+                          : "black",
+                      }}
+                      active={formik.values.disponible.caja}
+                      onClick={() =>
+                        formik.setFieldValue(
+                          "disponible",
+                          {
+                            ...formik.values.disponible,
+                            caja: !formik.values.disponible.caja,
+                          },
+                          false
+                        )
+                      }
+                    >
+                      Punto Venta
+                    </Button>
+                    <Button
+                      style={{
+                        backgroundColor: formik.values.disponible.domicilio
+                          ? colors.principal
+                          : "white",
+                        color: formik.values.disponible.domicilio
+                          ? "white"
+                          : "black",
+                      }}
+                      active={formik.values.disponible.domicilio}
+                      onClick={() =>
+                        formik.setFieldValue(
+                          "disponible",
+                          {
+                            ...formik.values.disponible,
+                            domicilio: !formik.values.disponible.domicilio,
+                          },
+                          false
+                        )
+                      }
+                    >
+                      Domicilios
+                    </Button>
+                    <Button
+                      style={{
+                        backgroundColor: formik.values.disponible.app
+                          ? colors.principal
+                          : "white",
+                        color: formik.values.disponible.app ? "white" : "black",
+                      }}
+                      active={formik.values.disponible.app}
+                      onClick={() =>
+                        formik.setFieldValue(
+                          "disponible",
+                          {
+                            ...formik.values.disponible,
+                            app: !formik.values.disponible.app,
+                          },
+                          false
+                        )
+                      }
+                    >
+                      App Móvil
+                    </Button>
+                  </ButtonGroup>
                 </FormGroup>
                 {formik.touched.orden && formik.errors.orden ? (
                   <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-2">

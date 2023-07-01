@@ -33,7 +33,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { formatoPrecio } from "../../utils";
+import { formatoPrecio, salsas } from "../../utils";
 import { productoInterno } from "../../dashboard/productoInterno";
 import ProductoPedido from "../../pedidos/productoPedido";
 import { ComponentToPrint } from "../../utils/print";
@@ -320,21 +320,6 @@ function HistorialPV() {
       default:
         break;
     }
-  };
-
-  const salsas = (producto) => {
-    const { bbq, rosa, pina } = producto.salsas;
-    var detalle = [];
-    if (bbq) {
-      detalle.push(" Bbq");
-    }
-    if (rosa) {
-      detalle.push(" Rosada");
-    }
-    if (pina) {
-      detalle.push(" Piña");
-    }
-    return [...detalle];
   };
 
   //metodo para cargar detalle del pedido

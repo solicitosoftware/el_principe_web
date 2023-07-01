@@ -9,6 +9,7 @@ export const roles = [
         editar: true,
         modificar: true,
         imprimir: true,
+        historial: true,
       },
       pedidos: {
         puntoVenta: true,
@@ -60,6 +61,7 @@ export const roles = [
         imprimir: true,
         entregar: true,
         pendientes: true,
+        historial: true,
       },
       historialpuntoventa: {
         cargar: true,
@@ -68,6 +70,7 @@ export const roles = [
         eliminar: true,
         imprimir: true,
         fecha: false,
+        historial: true,
       },
       historialdomicilios: {
         cargar: true,
@@ -149,6 +152,7 @@ export const roles = [
         imprimir: true,
         entregar: true,
         pendientes: true,
+        historial: true,
       },
       historialpuntoventa: {
         cargar: true,
@@ -156,6 +160,7 @@ export const roles = [
         modificar: true,
         eliminar: true,
         imprimir: true,
+        historial: true,
         fecha: false,
       },
       historialdomicilios: {
@@ -199,6 +204,7 @@ export const roles = [
         imprimir: true,
         entregar: true,
         pendientes: true,
+        historial: true,
       },
       productos: {
         cargar: true,

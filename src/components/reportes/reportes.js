@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../../css/general.css";
 import ContainerBase from "../dashboard/containerBase";
 import TableBase from "../dashboard/tableBase";
-import { formatearTimestamp, formatoPrecio } from "../utils";
+import { formatearTimestamp, formatoPrecio, salsas } from "../utils";
 import { CsvBuilder } from "filefy";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
@@ -257,44 +257,6 @@ function Reportes() {
         })
       );
     }
-  };
-
-  function salsas(producto) {
-    const { bbq, rosa, pina } = producto.salsas;
-    var detalle = [];
-    if (bbq) {
-      detalle.push(" Bbq");
-    }
-    if (rosa) {
-      detalle.push(" Rosada");
-    }
-    if (pina) {
-      detalle.push(" Piña");
-    }
-    return [...detalle];
-  }
-
-  //metodo para cargar detalle del pedido
-  const detallePedido = (value) => {
-    var detalle = value.productos.map((item) => {
-      const total = item.cantidad * item.precio;
-      const salsa = salsas(item);
-      return (
-        <div className="flex p-3 justify-end bg-gray-600 text-white">
-          <div className="flex w-1/2 justify-between mr-24">
-            <text className="w-1/3">
-              {item.nombre}{" "}
-              <Badge color="success" pill>
-                x{item.cantidad}
-              </Badge>
-            </text>
-            <text>{salsa.length > 0 ? `Salsas:${salsa}` : "Sin salsas"}</text>
-            <text>Pedido: {formatoPrecio(total)}</text>
-          </div>
-        </div>
-      );
-    });
-    return detalle;
   };
 
   return (

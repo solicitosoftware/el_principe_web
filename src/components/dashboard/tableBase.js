@@ -14,6 +14,7 @@ function TableBase({
   editar,
   entregar,
   imprimir,
+  historial,
   detailPanel,
   loading,
 }) {
@@ -72,6 +73,17 @@ function TableBase({
               rowData.estado === "Cancelado" || rowData.estado === "Entregado",
             onClick: (event, rowData) =>
               rowData.estado !== "Cancelado" && editar(rowData),
+          }),
+          (rowData) => ({
+            icon: "history",
+            tooltip: "Historial Productos",
+            hidden: !validarPermiso("historial"),
+            disabled:
+              rowData.estado === "Cancelado" ||
+              rowData.estado === "Entregado" ||
+              !rowData?.historial,
+            onClick: (event, rowData) =>
+              rowData.estado !== "Cancelado" && historial(rowData),
           }),
           (rowData) => ({
             icon: "notifications",

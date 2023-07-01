@@ -35,6 +35,8 @@ import {
   Nav,
   NavLink,
   NavItem,
+  InputGroup,
+  InputGroupAddon,
 } from "reactstrap";
 import classnames from "classnames";
 import { useFormik } from "formik";
@@ -46,6 +48,7 @@ import TableBase from "../../dashboard/tableBase";
 import { disenoToast } from "../../dashboard/disenoToastBase";
 import NumberFormat from "react-number-format";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
 function Cliente() {
   const navigate = useNavigate();
@@ -305,6 +308,13 @@ function Cliente() {
     return true;
   };
 
+  const consultarCliente = async () => {
+    const id = formik.values.telefono;
+    const result = await dispatch(obtenerClienteAsync(id)).unwrap();
+    cargarDatos({ ...result.data, id });
+    setModal(true);
+  };
+
   const lookupBarrio = () => {
     const lookup = {};
     barrios?.forEach((element) => {
@@ -424,15 +434,34 @@ function Cliente() {
               <div className="col">
                 <FormGroup>
                   <Label for="telefono">Teléfono Principal</Label>
-                  <NumberFormat
-                    customInput={Input}
-                    isNumericString={true}
-                    placeholder="Ingresa el teléfono"
-                    id="telefono"
-                    value={formik.values.telefono}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
+                  {idCliente ? (
+                    <NumberFormat
+                      customInput={Input}
+                      isNumericString={true}
+                      placeholder="Ingresa el teléfono"
+                      id="telefono"
+                      value={formik.values.telefono}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                  ) : (
+                    <InputGroup>
+                      <NumberFormat
+                        customInput={Input}
+                        isNumericString={true}
+                        placeholder="Ingresa el teléfono"
+                        id="telefono"
+                        value={formik.values.telefono}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                      <InputGroupAddon addonType="append">
+                        <Button color="primary" outline>
+                          <FaSearch onClick={consultarCliente} />
+                        </Button>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  )}
                 </FormGroup>
                 {formik.touched.telefono && formik.errors.telefono ? (
                   <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-2">
